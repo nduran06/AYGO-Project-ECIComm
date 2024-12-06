@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: eciComm
+
+aws:
+  region: us-east-1
+  credentials:
+    access-key: ASIAZMQOUQZAVPYQ5QQR
+    secret-key: raaKXOiyGY55dHTMbxCwpyGiomxfHK7RSbym95Kg
+  dynamodb:
+    endpoint: https://dynamodb.${aws.region}.amazonaws.com
+    tables:
+      product: Products
+      order: Orders
+      inventory: Inventories
+      user: Users
+  s3:
+    bucket: eciproductsbucket

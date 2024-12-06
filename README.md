@@ -1,1 +1,1 @@
-# AYGO-Project-ECICom
+# AYGO-Project-ECIComm
