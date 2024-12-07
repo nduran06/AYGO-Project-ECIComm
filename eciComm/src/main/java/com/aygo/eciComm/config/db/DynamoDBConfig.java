@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.aygo.eciComm.model.Inventory;
+import com.aygo.eciComm.model.Order;
 import com.aygo.eciComm.model.Product;
+import com.aygo.eciComm.model.User;
 
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.core.retry.RetryPolicy;
@@ -58,17 +61,19 @@ public class DynamoDBConfig {
 		return enhancedClient.table(productTableName, TableSchema.fromBean(Product.class));
 	}
 
-	/*
-	 * @Bean public DynamoDbTable<Order> orderTable(DynamoDbEnhancedClient
-	 * enhancedClient) { return enhancedClient.table(orderTableName,
-	 * TableSchema.fromBean(Order.class)); }
-	 * 
-	 * @Bean public DynamoDbTable<Inventory> inventoryTable(DynamoDbEnhancedClient
-	 * enhancedClient) { return enhancedClient.table(inventoryTableName,
-	 * TableSchema.fromBean(Inventory.class)); }
-	 * 
-	 * @Bean public DynamoDbTable<User> userTable(DynamoDbEnhancedClient
-	 * enhancedClient) { return enhancedClient.table(userTableName,
-	 * TableSchema.fromBean(User.class)); }
-	 */
+	@Bean
+	public DynamoDbTable<Order> orderTable(DynamoDbEnhancedClient enhancedClient) {
+		return enhancedClient.table(orderTableName, TableSchema.fromBean(Order.class));
+	}
+
+	@Bean
+	public DynamoDbTable<Inventory> inventoryTable(DynamoDbEnhancedClient enhancedClient) {
+		return enhancedClient.table(inventoryTableName, TableSchema.fromBean(Inventory.class));
+	}
+
+	@Bean
+	public DynamoDbTable<User> userTable(DynamoDbEnhancedClient enhancedClient) {
+		return enhancedClient.table(userTableName, TableSchema.fromBean(User.class));
+	}
+
 }

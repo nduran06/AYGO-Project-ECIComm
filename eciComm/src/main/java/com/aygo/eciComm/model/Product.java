@@ -27,7 +27,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 //The main Product entity
 @DynamoDbBean
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Product extends BaseItem {
+public class Product extends Component {
 	
 	private String name;
 	private String description;

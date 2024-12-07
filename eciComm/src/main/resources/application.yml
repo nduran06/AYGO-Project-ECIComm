@@ -5,14 +5,14 @@ spring:
 aws:
   region: us-east-1
   credentials:
-    access-key: ASIAZMQOUQZAVPYQ5QQR
-    secret-key: raaKXOiyGY55dHTMbxCwpyGiomxfHK7RSbym95Kg
+    access-key: ASIAZMQOUQZAQ55VABHB
+    secret-key: nUgu8gP2McWUnfgnmhWZUb1ZnKTSEqnee12SOIcc
   dynamodb:
     endpoint: https://dynamodb.${aws.region}.amazonaws.com
     tables:
       product: Products
       order: Orders
-      inventory: Inventories
+      inventory: Inventory
       user: Users
   s3:
     bucket: eciproductsbucket

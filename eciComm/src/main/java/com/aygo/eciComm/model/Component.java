@@ -15,7 +15,7 @@ import software.amazon.awssdk.enhanced.dynamodb.extensions.annotations.DynamoDbV
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class BaseItem {
+public abstract class Component {
 
 	protected String id;
 	private String type;
@@ -129,7 +129,7 @@ public abstract class BaseItem {
 	// Implement equals and hashCode using pattern matching
 	@Override
 	public boolean equals(Object obj) {
-		return obj instanceof BaseItem other && Objects.equals(id, other.id) && Objects.equals(type, other.type);
+		return obj instanceof Component other && Objects.equals(id, other.id) && Objects.equals(type, other.type);
 	}
 
 	@Override

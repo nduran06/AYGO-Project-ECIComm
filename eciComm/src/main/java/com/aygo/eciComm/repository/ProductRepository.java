@@ -32,6 +32,6 @@ public class ProductRepository extends AbstractDynamoDBRepository<Product> {
 				.putExpressionValue(":minPrice", AttributeValue.builder().n(minPrice.toString()).build())
 				.putExpressionValue(":maxPrice", AttributeValue.builder().n(maxPrice.toString()).build()).build();
 
-		return table.scan(r -> r.filterExpression(filterExpression)).items().stream().toList();
+		return getTable().scan(r -> r.filterExpression(filterExpression)).items().stream().toList();
 	}
 }

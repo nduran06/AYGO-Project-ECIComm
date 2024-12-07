@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
-import com.aygo.eciComm.model.BaseItem;
+import com.aygo.eciComm.model.Component;
 import com.aygo.eciComm.model.db.DynamoDBRepository;
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -19,10 +19,10 @@ import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 @Repository
-public abstract class AbstractDynamoDBRepository<T extends BaseItem> implements DynamoDBRepository<T> {
+public abstract class AbstractDynamoDBRepository<T extends Component> implements DynamoDBRepository<T> {
 
 	private final DynamoDbEnhancedClient enhancedClient;
-	protected final DynamoDbTable<T> table;
+	private final DynamoDbTable<T> table;
 	private final Class<T> entityClass;
 
 	public AbstractDynamoDBRepository(DynamoDbEnhancedClient enhancedClient, Class<T> entityClass, String tableName) {
@@ -33,6 +33,10 @@ public abstract class AbstractDynamoDBRepository<T extends BaseItem> implements 
 	}
 
 	protected abstract Class<T> getEntityClass();
+	
+	public DynamoDbTable<T> getTable(){
+		return this.table;
+	}
 
 	@Override
 	public T save(T item) {
