@@ -5,14 +5,21 @@ spring:
 aws:
   region: us-east-1
   credentials:
-    access-key: ASIAZMQOUQZAQ55VABHB
-    secret-key: nUgu8gP2McWUnfgnmhWZUb1ZnKTSEqnee12SOIcc
+    access-key: ASIAZMQOUQZAZT3LTKTP
+    secret-key: vqpOhpqhix/A1a3s5oFpmtOsDlZZu2rg4d3DMAHR
   dynamodb:
     endpoint: https://dynamodb.${aws.region}.amazonaws.com
     tables:
       product: Products
       order: Orders
+      orderItem: OrderItems
       inventory: Inventory
       user: Users
   s3:
-    bucket: eciproductsbucket
+    buckets:
+      product: eciproductsbucket
+      sagemaker: ecicommsagemakerbucket
+  sagemaker:
+    endpoint: EciCommSGK
+    
+  

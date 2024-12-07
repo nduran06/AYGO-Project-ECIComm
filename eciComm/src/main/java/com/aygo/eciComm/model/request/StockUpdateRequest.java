@@ -1,4 +1,4 @@
-package com.aygo.eciComm.model.response.request;
+package com.aygo.eciComm.model.request;
 
 import jakarta.validation.constraints.NotNull;
 

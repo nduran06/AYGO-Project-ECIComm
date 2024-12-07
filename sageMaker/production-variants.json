@@ -1,0 +1,8 @@
+[
+  {
+    "VariantName": "variant-1",
+    "ModelName": "EciCommSGK",
+    "InitialInstanceCount": 1,
+    "InstanceType": "ml.t2.medium"
+  }
+]

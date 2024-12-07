@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aygo.eciComm.exception.InventoryNotFoundException;
 import com.aygo.eciComm.exception.InventoryValidationException;
 import com.aygo.eciComm.model.Inventory;
+import com.aygo.eciComm.model.request.StockReservationRequest;
+import com.aygo.eciComm.model.request.StockUpdateRequest;
 import com.aygo.eciComm.model.response.ErrorResponse;
-import com.aygo.eciComm.model.response.request.StockReservationRequest;
-import com.aygo.eciComm.model.response.request.StockUpdateRequest;
 import com.aygo.eciComm.service.InventoryService;
 
 import jakarta.validation.Valid;

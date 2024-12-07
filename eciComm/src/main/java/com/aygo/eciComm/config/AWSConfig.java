@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.amazonaws.services.sagemakerruntime.AmazonSageMakerRuntime;
+import com.amazonaws.services.sagemakerruntime.AmazonSageMakerRuntimeClientBuilder;
+
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.core.retry.RetryPolicy;
@@ -21,7 +24,8 @@ public class AWSConfig {
 	@Bean
 	public S3Client s3Client() {
 		return S3Client.builder().region(Region.of(awsRegion))
-				// This will use the default credential chain (ideal for both local dev and AWS deployment)
+				// This will use the default credential chain (ideal for both local dev and AWS
+				// deployment)
 				.credentialsProvider(DefaultCredentialsProvider.create())
 				// Adding some sensible defaults for timeouts
 				.overrideConfiguration(ClientOverrideConfiguration.builder().apiCallTimeout(Duration.ofSeconds(30))

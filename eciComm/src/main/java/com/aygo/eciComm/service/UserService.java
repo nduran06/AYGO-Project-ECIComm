@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.aygo.eciComm.controller.UserController;
 import com.aygo.eciComm.exception.UserNotFoundException;
 import com.aygo.eciComm.exception.UserValidationException;
 import com.aygo.eciComm.model.User;
@@ -20,11 +20,8 @@ public class UserService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
-	private final UserRepository userRepository;
-
-	public UserService(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
+	@Autowired
+	private UserRepository userRepository;
 
 	public User createUser(User user) {
 		LOG.info("Creating new user with email: {}", user.getEmail());

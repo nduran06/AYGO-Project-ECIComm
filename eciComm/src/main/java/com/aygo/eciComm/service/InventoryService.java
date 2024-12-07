@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +20,11 @@ public class InventoryService {
 
 	private static final Logger LOG = LogManager.getLogger(InventoryService.class);
 
-	private final InventoryRepository inventoryRepository;
+	@Autowired
+	private InventoryRepository inventoryRepository;
+	
 	private static final Integer DEFAULT_REORDER_POINT = 10;
 	private static final Integer DEFAULT_REORDER_QUANTITY = 50;
-
-	public InventoryService(InventoryRepository inventoryRepository) {
-		this.inventoryRepository = inventoryRepository;
-	}
 
 	public Inventory createInventory(Inventory inventory) {
 		LOG.info("Creating inventory for product: {}", inventory.getProductId());

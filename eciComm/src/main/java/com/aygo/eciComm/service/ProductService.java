@@ -31,15 +31,12 @@ public class ProductService {
 
 	@Autowired
 	private ProductRepository productRepository;
-	private final S3Client s3Client;
 
-	@Value("${aws.s3.bucket}")
+	@Autowired
+	private S3Client s3Client;
+
+	@Value("${aws.s3.buckets.product}")
 	private String bucketName;
-
-	public ProductService(ProductRepository productRepository, S3Client s3Client) {
-		this.productRepository = productRepository;
-		this.s3Client = s3Client;
-	}
 
 	public Product createProduct(Product product) {
 		LOG.info("Creating new product: {}", product.getName());
@@ -50,8 +47,8 @@ public class ProductService {
 
 		try {
 			return productRepository.save(product);
-		} 
-		
+		}
+
 		catch (Exception e) {
 			LOG.error("Error creating product: {}", e.getMessage(), e);
 			throw new ProductValidationException("Failed to create product: " + e.getMessage());
@@ -78,19 +75,19 @@ public class ProductService {
 		if (productUpdate.getName() != null) {
 			existingProduct.setName(productUpdate.getName());
 		}
-		
+
 		if (productUpdate.getDescription() != null) {
 			existingProduct.setDescription(productUpdate.getDescription());
 		}
-		
+
 		if (productUpdate.getPrice() != null) {
 			existingProduct.setPrice(productUpdate.getPrice());
 		}
-		
+
 		if (productUpdate.getStockQuantity() != null) {
 			existingProduct.setStockQuantity(productUpdate.getStockQuantity());
 		}
-		
+
 		if (productUpdate.getCategory() != null) {
 			existingProduct.setCategory(productUpdate.getCategory());
 		}
@@ -139,9 +136,9 @@ public class ProductService {
 			product.setImageUrl(key);
 			productRepository.save(product);
 
-			return key;			
+			return key;
 		}
-		
+
 		catch (IOException e) {
 			LOG.error("Error uploading product image: {}", e.getMessage(), e);
 			throw new ProductValidationException("Failed to upload image: " + e.getMessage());
@@ -154,15 +151,15 @@ public class ProductService {
 		if (product.getName() == null || product.getName().trim().isEmpty()) {
 			errors.add("Product name is required");
 		}
-		
+
 		if (product.getPrice() == null || product.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
 			errors.add("Product price must be greater than zero");
 		}
-		
+
 		if (product.getStockQuantity() == null || product.getStockQuantity() < 0) {
 			errors.add("Stock quantity cannot be negative");
 		}
-		
+
 		if (product.getCategory() == null) {
 			errors.add("Product category is required");
 		}
@@ -179,9 +176,9 @@ public class ProductService {
 		if (file.getSize() > 5_000_000) { // 5MB limit
 			throw new ProductValidationException("Image file size must be less than 5MB");
 		}
-		
+
 		String contentType = file.getContentType();
-		
+
 		if (contentType == null || !contentType.startsWith("image/")) {
 			throw new ProductValidationException("File must be an image");
 		}
@@ -191,8 +188,8 @@ public class ProductService {
 		try {
 			DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder().bucket(bucketName).key(imageUrl).build();
 			s3Client.deleteObject(deleteRequest);
-		} 
-		
+		}
+
 		catch (Exception e) {
 			LOG.error("Error deleting product image: {}", e.getMessage(), e);
 		}
