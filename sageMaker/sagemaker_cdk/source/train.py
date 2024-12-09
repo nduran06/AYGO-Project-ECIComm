@@ -3,6 +3,7 @@ import json
 import pickle
 import sys
 import traceback
+import shutil
 import boto3
 import pandas as pd
 import numpy as np
@@ -322,7 +323,7 @@ def train():
         save_model_artifacts(model, encoders, model_dir)
 
         print("Training job completed successfully")
-        
+
 
     except Exception as e:
         print(f"Error details: {str(e)}")
