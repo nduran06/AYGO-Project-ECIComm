@@ -28,6 +28,13 @@ pip3 install aws-cdk-lib constructs boto3 sagemaker pandas scikit-learn
 
 # Create the model ()/resources...
 
+# Create the bucket if it doesn't exist
+aws s3 mb s3://ecicommsagemakerbucket
+
+# Create the models directory
+aws s3api put-object --bucket ecicommsagemakerbucket --key models/
+
+
 ## create_push_model.sh
 
 # Deploy the stack

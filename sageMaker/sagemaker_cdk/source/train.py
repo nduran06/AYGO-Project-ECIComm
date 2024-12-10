@@ -6,6 +6,7 @@ import traceback
 import shutil
 import boto3
 import pandas as pd
+import tarfile  # Add this import
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
@@ -181,60 +182,51 @@ def prepare_target(dates):
 
     return y, reference_date
 
-def save_model_artifacts(model, encoders, model_dir):
+def save_model_artifacts(model, encoders, bucket):
     """
-    Save model artifacts using a temporary directory approach to handle
-    SageMaker's file system permissions.
-
-    Args:
-        model: The trained model object
-        encoders: Dictionary of encoders used for feature transformation
-        model_dir: Target directory for model artifacts
+    Save model artifacts as tar.gz directly to S3 using BytesIO
     """
-    print(f"Starting model artifact saving process...")
-
-    # Create a temporary directory in /tmp which is always writable
-    temp_dir = '/tmp/model_artifacts'
-    os.makedirs(temp_dir, exist_ok=True)
-    print(f"Created temporary directory: {temp_dir}")
+    print("Saving model artifacts to S3...")
 
     try:
-        # First save files to temporary location
-        temp_model_path = os.path.join(temp_dir, 'model.pkl')
-        temp_encoders_path = os.path.join(temp_dir, 'encoders.pkl')
+        # Create S3 client
+        s3 = boto3.client('s3')
 
-        print("Saving model to temporary location...")
-        with open(temp_model_path, 'wb') as f:
-            pickle.dump(model, f)
+        # Create a BytesIO object to hold the tar.gz data
+        tar_buffer = BytesIO()
 
-        print("Saving encoders to temporary location...")
-        with open(temp_encoders_path, 'wb') as f:
-            pickle.dump(encoders, f)
+        # Create tar.gz archive in memory
+        with tarfile.open(fileobj=tar_buffer, mode='w:gz') as tar:
+            # Add model pickle
+            model_buffer = BytesIO()
+            pickle.dump(model, model_buffer)
+            model_buffer.seek(0)
+            model_info = tarfile.TarInfo(name='model.pkl')
+            model_info.size = model_buffer.getbuffer().nbytes
+            tar.addfile(model_info, model_buffer)
 
-        # Create model directory if it doesn't exist
-        os.makedirs(model_dir, exist_ok=True)
+            # Add encoders pickle
+            encoders_buffer = BytesIO()
+            pickle.dump(encoders, encoders_buffer)
+            encoders_buffer.seek(0)
+            encoders_info = tarfile.TarInfo(name='encoders.pkl')
+            encoders_info.size = encoders_buffer.getbuffer().nbytes
+            tar.addfile(encoders_info, encoders_buffer)
 
-        # Move files from temporary location to final destination
-        print(f"Moving files to final destination: {model_dir}")
-        shutil.move(temp_model_path, os.path.join(model_dir, 'model.pkl'))
-        shutil.move(temp_encoders_path, os.path.join(model_dir, 'encoders.pkl'))
+        # Reset buffer position for upload
+        tar_buffer.seek(0)
 
-        print("Successfully saved model artifacts")
+        # Upload tar.gz to S3
+        s3.upload_fileobj(
+            tar_buffer,
+            bucket,
+            'models/model.tar.gz'
+        )
+        print(f"Model artifacts saved to s3://{bucket}/models/model.tar.gz")
 
     except Exception as e:
-        print(f"Error during model saving: {str(e)}")
-        print("\nDebug information:")
-        print(f"Temporary directory exists: {os.path.exists(temp_dir)}")
-        print(f"Model directory exists: {os.path.exists(model_dir)}")
-        print("\nDirectory permissions:")
-        os.system(f"ls -la {temp_dir}")
-        os.system(f"ls -la {model_dir}")
+        print(f"Error saving model artifacts to S3: {str(e)}")
         raise
-    finally:
-        # Clean up temporary directory
-        if os.path.exists(temp_dir):
-            shutil.rmtree(temp_dir)
-            print("Cleaned up temporary directory")
 
 def train():
     try:
@@ -244,6 +236,9 @@ def train():
 
         if not os.path.exists(output_path):
             os.makedirs(output_path)
+
+        if not os.path.exists(model_path):
+            os.makedirs(model_path)
 
         # Read hyperparameters
         print("Starting training process...")
@@ -314,13 +309,7 @@ def train():
 
         # Save model and encoders
         print("\nTraining completed successfully. Saving model artifacts...")
-        model_dir = '/opt/ml/model'
-
-        # Verify the model directory exists and create if needed
-        os.makedirs(model_dir, exist_ok=True)
-
-        # Save the model artifacts
-        save_model_artifacts(model, encoders, model_dir)
+        save_model_artifacts(model, encoders, bucket)
 
         print("Training job completed successfully")
 

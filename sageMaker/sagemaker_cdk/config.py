@@ -15,7 +15,7 @@ class Config:
     # S3 Settings
     S3_BUCKET_NAME = "ecicommsagemakerbucket"
     FOLDER_PATH = "training-data/"
-    S3_MODEL_PATH = "data/model.tar.gz"
+    S3_MODEL_PATH = "models/model.tar.gz"
     DATA_PATH = {
         'user_profiles': FOLDER_PATH + 'user_profiles.csv',
         'products': FOLDER_PATH + 'products.csv',
@@ -23,7 +23,6 @@ class Config:
         'orders': FOLDER_PATH + 'orders.csv',
         'recommendations': FOLDER_PATH + 'product_recommendations.csv'
     }
-    MODEL_PATH = "data-collected"
 
     # SageMaker Settings
     SAGEMAKER_MODEL_NAME = "recommendation-model"

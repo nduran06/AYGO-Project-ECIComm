@@ -49,7 +49,12 @@ class SageMakerStack(cdk_Stack):
             execution_role_arn=Config.IAM_ROLE_NAME,
             primary_container=sagemaker.CfnModel.ContainerDefinitionProperty(
                 image=Config.ECR_IMAGE_URI,
-                model_data_url=f"s3://{model_bucket.bucket_name}/{Config.S3_MODEL_PATH}")
+                model_data_url=f"s3://{model_bucket.bucket_name}/{Config.S3_MODEL_PATH}",
+                environment={
+                    "SAGEMAKER_PROGRAM": "inference.py",
+                    "SAGEMAKER_SUBMIT_DIRECTORY": "/opt/ml/model",
+                    "SAGEMAKER_CONTAINER_LOG_LEVEL": "20"  # INFO level logging
+                })
         )
 
         endpoint_config = sagemaker.CfnEndpointConfig(

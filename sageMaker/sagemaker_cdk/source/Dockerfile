@@ -1,19 +1,21 @@
 FROM python:3.9-slim
 
-# Set the working directory
-WORKDIR /app
-
-# Copy the requirements file
-COPY requirements.txt .
-
 # Install dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip install numpy pandas scikit-learn joblib boto3
 
-# Copy the training script
-COPY train.py .
+# Create directories
+RUN mkdir -p /opt/ml/code
 
-# Set the entry point
-ENTRYPOINT ["python", "train.py"]
+# Copy training and inference scripts
+COPY train.py /opt/ml/code/
+COPY inference.py /opt/ml/code/
+
+# Make scripts executable
+RUN chmod +x /opt/ml/code/train.py
+RUN chmod +x /opt/ml/code/inference.py
+
+# Set working directory
+WORKDIR /opt/ml/code
+
+# Set the entrypoint
+ENTRYPOINT ["python", "/opt/ml/code/train.py"]
