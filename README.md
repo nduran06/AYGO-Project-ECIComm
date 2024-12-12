@@ -1,57 +1,107 @@
-# AYGO-Project-ECIComm
+## AYGO-Project
 
-# Initialize a new CDK project
+# ECIComm
 
-export JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION=1
+This project aims to propose the design of an architecture for one of the applications of distributed systems with integrated AI and ML capabilities, in this case, an e-commerce platform called ECIComm. The architecture follows a microservices approach, leveraging AWS services to create a scalable, resilient, and intelligent shopping experience.
 
-mkdir sagemaker_cdk && cd sagemaker_cdk
-cdk init app --language python
+## Architecture Overview
 
-mkdir source && touch __init__.py
+![alt text](imgs/arqui.png)
 
+The platform is designed with multiple layers, each serving specific functions while maintaining loose coupling and high cohesion. The architecture diagram (shown above) illustrates the following key layers:
 
-# Install dependencies
+### Client Layer
 
-sudo apt-get install -y podman
+Handles user interactions through web and mobile applications, utilizing CloudFront for content delivery and caching.
 
-# Create virtual environment
-python3 -m venv .venv
+### API Layer
 
-# Or activate it (Mac/Linux)
-source .venv/bin/activate
+Manages API requests through API Gateway, implementing security through AWS WAF and Cognito. APIs are organized by domain (Product, Order, User, Search, Cart) for better maintainability.
 
-# Then install the dependencies
+### Application Layer
+Houses the core business logic in microservices running on ECS/EKS clusters.
 
-npm install -g aws-cdk
+Services include:
 
-pip3 install aws-cdk-lib constructs boto3 sagemaker pandas scikit-learn
+- Product Service
+- Order Service
+- Inventory Service
+- Search Service
+- User Service
+- Recommendation Service
+- Cart Service
 
-# Create the model ()/resources...
+### Data Layer
+Utilizes different databases optimized for specific use cases:
 
-# Create the bucket if it doesn't exist
-aws s3 mb s3://ecicommsagemakerbucket
+- Aurora for product catalog and user data
+- DynamoDB for orders and inventory
+- ElastiCache for cart management
+- OpenSearch for search functionality
 
-# Create the models directory
-aws s3api put-object --bucket ecicommsagemakerbucket --key models/
+### Storage Layer
 
+Manages file storage through S3:
 
-## create_push_model.sh
+- Product images
+- Backup files
+- System logs
 
-# Deploy the stack
+### Caching Layer
 
-cdk bootstrap --show-template > bootstrap-template.yaml
-cdk bootstrap --template bootstrap-template.yaml
-cdk list
-cdk synth
-cdk deploy -r arn:aws:iam::645349541441:role/LabRole
+Implements Redis clusters for:
 
+- Performance optimization
+- Session management
+- Temporary data storage
 
-chmod +x build_push.sh
-./build_push.sh
+### Message Queue
+Handles asynchronous operations using:
 
+- Amazon MQ
+- SQS Queues
 
+### AI/ML Layer
+Provides intelligent features through:
 
+- SageMaker for custom ML models
+- Personalize for recommendation systems
+- Forecast for inventory predictions
 
+### Analytics Layer
 
-# To destroy when done
-cdk destroy
+Processes and analyzes data using:
+
+- Kinesis Data Streams
+- EMR for processing
+- Redshift for data warehousing
+- QuickSight for visualization
+
+## Prototype Implementation
+
+This repository contains a prototype implementation focusing on two key layers:
+
+### Application Layer Implementation
+
+- REST controllers for service endpoints
+- Service layer business logic
+- Repository layer for data access
+- Event publishing for system integration
+- Error handling and validation
+
+### ML Layer Implementation
+
+- Recommendation engine integration
+- Product similarity calculations
+- User behavior analysis
+- Real-time prediction serving
+- Model training pipeline
+
+## Technologies Used
+
+- Java 21
+- Spring Boot
+- Maven
+- AWS SDK
+- PostgreSQL
+- AWS Services (SageMaker, Personalize, ...)
