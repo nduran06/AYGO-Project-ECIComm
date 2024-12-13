@@ -13,7 +13,14 @@ import org.springframework.stereotype.Service;
 
 import com.aygo.eciComm.exception.AnalysisException;
 import com.aygo.eciComm.model.analysis.UserBehavior;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.sagemakerruntime.SageMakerRuntimeClient;
+import software.amazon.awssdk.services.sagemakerruntime.model.InvokeEndpointRequest;
+import software.amazon.awssdk.services.sagemakerruntime.model.InvokeEndpointResponse;
 
 @Service
 public class BehaviorAnalysisService {
@@ -24,35 +31,39 @@ public class BehaviorAnalysisService {
     private ObjectMapper objectMapper;
 
     // Comment out real SageMaker client
-    /*@Autowired
+    @Autowired
     private SageMakerRuntimeClient sageMakerClient;
     
     @Value("${aws.sagemaker.endpoint}")
-    private String sageMakerEndpoint;*/
+    private String sageMakerEndpoint;
 
     public Map<String, Double> predictUserPreferences(String userId, UserBehavior behavior) {
-        try {
-            // COMMENTED: Real SageMaker call
-            /*Map<String, Object> inputData = new HashMap<>();
-            inputData.put("user_id", userId);
-            inputData.put("viewed_products", behavior.getViewedProducts());
-            inputData.put("purchased_products", behavior.getPurchasedProducts());
-            inputData.put("category_views", behavior.getCategoryViews());
-            inputData.put("price_preferences", behavior.getPriceRangePreferences());
+		try {
+			// Prepare the input data for the model
+			Map<String, Object> inputData = new HashMap<>();
+			inputData.put("user_id", userId);
+			inputData.put("viewed_products", behavior.getViewedProducts());
+			inputData.put("purchased_products", behavior.getPurchasedProducts());
+			inputData.put("category_views", behavior.getCategoryViews());
+			inputData.put("price_preferences", behavior.getPriceRangePreferences());
 
-            String inputJson = objectMapper.writeValueAsString(inputData);
+			String inputJson = objectMapper.writeValueAsString(inputData);
 
-            InvokeEndpointRequest request = InvokeEndpointRequest.builder()
-                    .endpointName(sageMakerEndpoint)
-                    .contentType("application/json")
-                    .body(SdkBytes.fromUtf8String(inputJson))
-                    .build();
+			// Call SageMaker endpoint
+			InvokeEndpointRequest request = InvokeEndpointRequest.builder().endpointName(sageMakerEndpoint)
+					.contentType("application/json").body(SdkBytes.fromUtf8String(inputJson)).build();
 
-            InvokeEndpointResponse response = sageMakerClient.invokeEndpoint(request);
-            String result = response.body().asUtf8String();*/
+			InvokeEndpointResponse response = sageMakerClient.invokeEndpoint(request);
+			String result = response.body().asUtf8String();
+
+			// Parse and return predictions
+			return objectMapper.readValue(result, new TypeReference<Map<String, Double>>() {
+			});
+		
+
 
             // SIMULATED RESPONSE: Return mock preferences based on behavior
-            Map<String, Double> mockPreferences = new HashMap<>();
+            /*Map<String, Double> mockPreferences = new HashMap<>();
             mockPreferences.put("electronics", 0.85);
             mockPreferences.put("books", 0.65);
             mockPreferences.put("clothing", 0.45);
@@ -66,7 +77,7 @@ public class BehaviorAnalysisService {
             }
 
             LOG.info("Generated mock preferences for user {}", userId);
-            return mockPreferences;
+            return mockPreferences;*/
 
         } catch (Exception e) {
             LOG.error("Error in mock prediction: {}", e.getMessage(), e);
@@ -77,7 +88,7 @@ public class BehaviorAnalysisService {
     public List<String> getProductRecommendations(String userId, UserBehavior behavior) {
         try {
             // COMMENTED: Real SageMaker call
-            /*Map<String, Object> inputData = new HashMap<>();
+            Map<String, Object> inputData = new HashMap<>();
             inputData.put("user_id", userId);
             inputData.put("behavior", behavior);
 
@@ -90,10 +101,13 @@ public class BehaviorAnalysisService {
                     .build();
 
             InvokeEndpointResponse response = sageMakerClient.invokeEndpoint(request);
-            String result = response.body().asUtf8String();*/
+            String result = response.body().asUtf8String();
+            
+			return objectMapper.readValue(result, new TypeReference<List<String>>() {});
+
 
             // SIMULATED RESPONSE: Return mock product recommendations
-            List<String> mockRecommendations = Arrays.asList(
+            /*List<String> mockRecommendations = Arrays.asList(
                 "PROD_" + Math.round(Math.random() * 1000),
                 "PROD_" + Math.round(Math.random() * 1000),
                 "PROD_" + Math.round(Math.random() * 1000),
@@ -102,7 +116,7 @@ public class BehaviorAnalysisService {
             );
 
             LOG.info("Generated mock recommendations for user {}", userId);
-            return mockRecommendations;
+            return mockRecommendations;*/
 
         } catch (Exception e) {
             LOG.error("Error generating mock recommendations: {}", e.getMessage(), e);

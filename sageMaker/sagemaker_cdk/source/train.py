@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import json
 import pickle
@@ -182,50 +184,33 @@ def prepare_target(dates):
 
     return y, reference_date
 
-def save_model_artifacts(model, encoders, bucket):
-    """
-    Save model artifacts as tar.gz directly to S3 using BytesIO
-    """
-    print("Saving model artifacts to S3...")
-
+def save_model_artifacts(model, encoders):
+    """Save model artifacts in the format and location SageMaker expects"""
     try:
-        # Create S3 client
-        s3 = boto3.client('s3')
+        # SageMaker expects model artifacts in /opt/ml/model
+        model_path = '/opt/ml/model'
+        os.makedirs(model_path, exist_ok=True)
 
-        # Create a BytesIO object to hold the tar.gz data
-        tar_buffer = BytesIO()
+        # Create tar file in the required location
+        with tarfile.open(os.path.join(model_path, 'model.tar.gz'), 'w:gz') as tar:
+            # Save model to a temporary file first
+            model_file = os.path.join(model_path, 'model.pkl')
+            encoders_file = os.path.join(model_path, 'encoders.pkl')
 
-        # Create tar.gz archive in memory
-        with tarfile.open(fileobj=tar_buffer, mode='w:gz') as tar:
-            # Add model pickle
-            model_buffer = BytesIO()
-            pickle.dump(model, model_buffer)
-            model_buffer.seek(0)
-            model_info = tarfile.TarInfo(name='model.pkl')
-            model_info.size = model_buffer.getbuffer().nbytes
-            tar.addfile(model_info, model_buffer)
+            # Save the files
+            with open(model_file, 'wb') as f:
+                pickle.dump(model, f)
+            with open(encoders_file, 'wb') as f:
+                pickle.dump(encoders, f)
 
-            # Add encoders pickle
-            encoders_buffer = BytesIO()
-            pickle.dump(encoders, encoders_buffer)
-            encoders_buffer.seek(0)
-            encoders_info = tarfile.TarInfo(name='encoders.pkl')
-            encoders_info.size = encoders_buffer.getbuffer().nbytes
-            tar.addfile(encoders_info, encoders_buffer)
+            # Add files to tar
+            tar.add(model_file, arcname='model.pkl')
+            tar.add(encoders_file, arcname='encoders.pkl')
 
-        # Reset buffer position for upload
-        tar_buffer.seek(0)
-
-        # Upload tar.gz to S3
-        s3.upload_fileobj(
-            tar_buffer,
-            bucket,
-            'models/model.tar.gz'
-        )
-        print(f"Model artifacts saved to s3://{bucket}/models/model.tar.gz")
+        print(f"Model artifacts saved successfully to {model_path}")
 
     except Exception as e:
-        print(f"Error saving model artifacts to S3: {str(e)}")
+        print(f"Error saving model artifacts: {str(e)}")
         raise
 
 def train():
@@ -259,17 +244,37 @@ def train():
             'products': 'training-data/products.csv',
             'user_behavior': 'training-data/user_behavior.csv',
             'orders': 'training-data/orders.csv',
+            'order_items': 'training-data/order_items.csv',  # Added this
             'recommendations': 'training-data/product_recommendations.csv'
         }
+
+        # Add logging for data loading
+        print("Starting to load data from S3...")
         data = {}
         for name, key in data_files.items():
-            data[name] = load_data_from_s3(bucket, key)
-        user_profiles_data = data['user_profiles']
+            try:
+                print(f"Loading {name} from {key}")
+                data[name] = load_data_from_s3(bucket, key)
+                print(f"Successfully loaded {name}, shape: {data[name].shape}")
+            except Exception as e:
+                print(f"Error loading {name}: {str(e)}")
+                raise
 
-        # Prepare features and target
-        # Define column types
+        # Extract user profiles data for training
+        user_profiles_data = data['user_profiles']
+        print(f"User profiles data shape: {user_profiles_data.shape}")
+
+        # Print column names for verification
+        print(f"User profiles columns: {user_profiles_data.columns.tolist()}")
+
+        # Define column types based on your actual data
         categorical_columns = ['age_group', 'gender', 'location', 'preferred_categories']
         numerical_columns = ['avg_order_value', 'total_orders']
+
+        # Verify columns exist
+        for col in categorical_columns + numerical_columns:
+            if col not in user_profiles_data.columns:
+                raise ValueError(f"Missing required column: {col}")
 
         # Prepare features
         X, encoders = prepare_features(user_profiles_data, categorical_columns, numerical_columns)
@@ -309,7 +314,7 @@ def train():
 
         # Save model and encoders
         print("\nTraining completed successfully. Saving model artifacts...")
-        save_model_artifacts(model, encoders, bucket)
+        save_model_artifacts(model, encoders)
 
         print("Training job completed successfully")
 

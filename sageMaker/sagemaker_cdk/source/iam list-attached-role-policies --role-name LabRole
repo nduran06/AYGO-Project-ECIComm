@@ -1,0 +1,88 @@
+{
+    "Role": {
+        "Path": "/",
+        "RoleName": "LabRole",
+        "RoleId": "AROAZMQOUQZAXFEEWWW57",
+        "Arn": "arn:aws:iam::645349541441:role/LabRole",
+        "CreateDate": "2024-10-23T19:29:50+00:00",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": [
+                            "iot.amazonaws.com",
+                            "ecs-tasks.amazonaws.com",
+                            "codecommit.amazonaws.com",
+                            "iotevents.amazonaws.com",
+                            "application-autoscaling.amazonaws.com",
+                            "elasticloadbalancing.amazonaws.com",
+                            "lambda.amazonaws.com",
+                            "sns.amazonaws.com",
+                            "iotanalytics.amazonaws.com",
+                            "cloudtrail.amazonaws.com",
+                            "dynamodb.amazonaws.com",
+                            "ec2.amazonaws.com",
+                            "glue.amazonaws.com",
+                            "databrew.amazonaws.com",
+                            "rds.amazonaws.com",
+                            "credentials.iot.amazonaws.com",
+                            "servicecatalog.amazonaws.com",
+                            "backup.amazonaws.com",
+                            "pipes.amazonaws.com",
+                            "kinesisanalytics.amazonaws.com",
+                            "cloud9.amazonaws.com",
+                            "firehose.amazonaws.com",
+                            "events.amazonaws.com",
+                            "logs.amazonaws.com",
+                            "states.amazonaws.com",
+                            "elasticbeanstalk.amazonaws.com",
+                            "kms.amazonaws.com",
+                            "elasticmapreduce.amazonaws.com",
+                            "cloudformation.amazonaws.com",
+                            "scheduler.amazonaws.com",
+                            "batch.amazonaws.com",
+                            "s3.amazonaws.com",
+                            "eks-fargate-pods.amazonaws.com",
+                            "athena.amazonaws.com",
+                            "deepracer.amazonaws.com",
+                            "codewhisperer.amazonaws.com",
+                            "autoscaling.amazonaws.com",
+                            "sagemaker.amazonaws.com",
+                            "ssm.amazonaws.com",
+                            "resource-groups.amazonaws.com",
+                            "cognito-idp.amazonaws.com",
+                            "kinesis.amazonaws.com",
+                            "forecast.amazonaws.com",
+                            "secretsmanager.amazonaws.com",
+                            "redshift.amazonaws.com",
+                            "apigateway.amazonaws.com",
+                            "ecs.amazonaws.com",
+                            "codedeploy.amazonaws.com",
+                            "sqs.amazonaws.com",
+                            "rekognition.amazonaws.com",
+                            "ec2.application-autoscaling.amazonaws.com",
+                            "eks.amazonaws.com",
+                            "elasticfilesystem.amazonaws.com"
+                        ],
+                        "AWS": "arn:aws:iam::645349541441:role/LabRole"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        },
+        "Description": "",
+        "MaxSessionDuration": 3600,
+        "Tags": [
+            {
+                "Key": "cloudlab",
+                "Value": "c139121a3566312l8084430t1w645349541441"
+            }
+        ],
+        "RoleLastUsed": {
+            "LastUsedDate": "2024-12-13T06:41:48+00:00",
+            "Region": "us-east-1"
+        }
+    }
+}

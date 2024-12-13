@@ -1,21 +1,32 @@
-FROM python:3.9-slim
+FROM python:3.8-slim
 
-# Install dependencies
-RUN pip install numpy pandas scikit-learn joblib boto3
-
-# Create directories
-RUN mkdir -p /opt/ml/code
-
-# Copy training and inference scripts
-COPY train.py /opt/ml/code/
-COPY inference.py /opt/ml/code/
-
-# Make scripts executable
-RUN chmod +x /opt/ml/code/train.py
-RUN chmod +x /opt/ml/code/inference.py
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    python3-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /opt/ml/code
 
-# Set the entrypoint
-ENTRYPOINT ["python", "/opt/ml/code/train.py"]
+# Set permissions for SageMaker directories
+RUN mkdir -p /opt/ml/model \
+    && mkdir -p /opt/ml/output \
+    && mkdir -p /opt/ml/input/data \
+    && chmod -R 777 /opt/ml
+
+# Copy requirements file
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install -r requirements.txt
+
+# Copy training code
+COPY train.py .
+COPY inference.py .
+
+# Make train.py executable
+RUN chmod +x train.py
+
+ENTRYPOINT ["python", "train.py"]

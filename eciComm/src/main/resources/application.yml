@@ -20,6 +20,6 @@ aws:
       product: eciproductsbucket
       sagemaker: ecicommsagemakerbucket
   sagemaker:
-    endpoint: EciCommSGK
+    endpoint: ecicommSagemakerEP
     
   
