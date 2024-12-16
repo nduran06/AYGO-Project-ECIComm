@@ -4,9 +4,18 @@
 
 This project aims to propose the design of an architecture for one of the applications of distributed systems with integrated AI and ML capabilities, in this case, an e-commerce platform called ECIComm. The architecture follows a microservices approach, leveraging AWS services to create a scalable, resilient, and intelligent shopping experience.
 
+### Dockerhub
+
+In the [ECIComm Docker Hub repository](https://hub.docker.com/repository/docker/nduran06/ecicomm/general) you will find two components:
+
+* **Tag:** latest *(Application Layer)* Services implementation - EC2
+* **Tag:** latest-sagemaker *(AI/ML Layer)* Training image - Sagemaker
+
+![](imgs/dockerhub.png)
+
 ### Modeling
 
-![alt text](imgs/diag_class.png)
+![](imgs/diag_class.png)
 
 ### Considerations
 
